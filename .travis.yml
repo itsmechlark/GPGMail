@@ -1,0 +1,3 @@
+os: osx
+install: cd Dependencies && git clone https://github.com/GPGTools/Libmacgpg.git 
+script: make
