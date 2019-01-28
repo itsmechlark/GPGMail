@@ -1,3 +1,22 @@
 os: osx
 install: cd Dependencies && git clone https://github.com/GPGTools/Libmacgpg.git && cd Libmacgpg && git checkout dev && git pull
-script: make
+script: cd ${TRAVIS_BUILD_DIR} && make
+before_deploy:
+  - git config --local user.name "itsmechlark"
+  - git config --local user.email "sumatra.johnchlark@gmail.com"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  - mv ${TRAVIS_BUILD_DIR}/Dependencies/Libmacgpg/build/Release/Libmacgpg.framework ${HOME}
+  - mv ${TRAVIS_BUILD_DIR}/build/Releases/GPGMail.mailbundle ${HOME}
+  - git tag $TRAVIS_TAG
+deploy:
+  provider: releases
+  api_key:
+    secure: v9tiBfgdP3nRCBvyLzNjpxP+Rbcnznk732piUhKAqqB1AvPsAzBcYhdXliCRHwLPX0KE+LdnLnpQtQ/QxFdHAhAD4/2dVfJrsQyEE2eRgWh1FNDghdmlA5XyNR3tHGOm2AjuYRqEFPXG7RxbPFyBbsFEoU+UsD/Ly189v6g+6LccxhsV34FBTfjcO9s20uXgWQfFSDMZhsjonnS5G/uVMo62f7PKtUTyH2dQ7K5pC47k0vsdSXLh4amClaSIIA1UtNr97m8QGg0p5XzDmWnHEcCCmOdvYMh/T1mAVmkc+8+y+4HQL7rVgErKH9g3ngBi/AFBUlLWykqBcGobMOBAxV/raAEipWyoU9c5XJayTnvT9vzTb9m/U/9WtGfL8YGHFlnq1CvWk0Ukeg7im4SnwaWKTWZDitjfFjHcbB18mGWAXv1uJmHAWIKSkfOlfPH4ZnUcIRGh3F3e6kLhyuQqMoWQBZCFIzHWf55mohTO2c48CbvouXlgnlCIlJxZ8sz9GYK7ungA/DEkt5jDRnp1v5fpGCPt6RqpR8DpMUx5LQuTMdFAWJte83oIa5lvg8sGZ7yJkLi6J/Glhr7LzaG7IzwjGhNGRZq8oPFzRF4dIqJe4bEp3moCV0CGzhiX8HgAzkrV0sPCHwRLdelX5s/Z8twxAt0iFaoP7lVdvMrh5+s=
+  file:
+    - Libmacgpg.framework
+    - GPGMail.mailbundle
+  on:
+    repo: itsmechlark/GPGMail
+    branch: dev
+  skip_cleanup: true  
+
